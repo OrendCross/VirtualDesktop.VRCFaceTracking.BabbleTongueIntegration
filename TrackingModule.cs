@@ -1,12 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Linq.Expressions;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using VRCFaceTracking;
 using VRCFaceTracking.Core.Library;
 using VRCFaceTracking.Core.Params.Data;
@@ -26,6 +29,14 @@ namespace VirtualDesktop.FaceTracking
         #region Fields
         private MemoryMappedFile _mappedFile;
         private MemoryMappedViewAccessor _mappedView;
+
+        private Process eyeGaugeProcess;
+        private MemoryMappedFile avgMap;
+        private MemoryMappedFile eyeMap;
+        private MemoryMappedViewAccessor avgAccessor;
+        private MemoryMappedViewAccessor eyeAccessor;
+        private bool useDilation = false;
+
         private FaceState* _faceState;
         private bool _eyeAvailable, _expressionAvailable;
         private EventWaitHandle _faceStateEvent;
@@ -59,13 +70,69 @@ namespace VirtualDesktop.FaceTracking
 
         public override (bool eyeSuccess, bool expressionSuccess) Initialize(bool eyeAvailable, bool expressionAvailable)
         {
-            ModuleInformation.Name = "Virtual Desktop";
+            ModuleInformation.Name = "Virtual Desktop (EyeGauge)";
 
-            var stream = GetType().Assembly.GetManifestResourceStream("VirtualDesktop.FaceTracking.Resources.Logo256.png");
+            var stream = GetType().Assembly.GetManifestResourceStream("VirtualDesktop.FaceTracking.Resources.Logo256Dilation.png");
             if (stream != null)
             {
                 ModuleInformation.StaticImages = new List<Stream> { stream };
             }
+
+            #region launch OVREyeGauge
+            string dllDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string executablePath = Path.Combine(dllDirectory, "EyeGauge\\OVREyeGauge.exe");
+
+            Task.Run(() =>
+            {
+                if (File.Exists(executablePath))
+                {
+                    bool processStarted = false;
+                    ProcessStartInfo startInfo = new ProcessStartInfo
+                    {
+                        FileName = executablePath,
+                        UseShellExecute = true
+                    };
+
+                    try
+                    {
+                        Logger.LogInformation($"Starting OVREyeGauge process");
+                        eyeGaugeProcess = Process.Start(startInfo);
+                        Logger.LogInformation("OVREyeGauge process started successfully.");
+                        processStarted = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex.Message);
+                    }
+
+                    bool isConnected = false;
+                    while (!isConnected && Status >= ModuleState.Idle)
+                    {
+                        try
+                        {
+                            Logger.LogInformation("Mapping OVREyeGauge memory.");
+                            avgMap = MemoryMappedFile.OpenExisting("Local\\EyeGaugeAvg", MemoryMappedFileRights.ReadWrite);
+                            avgAccessor = avgMap.CreateViewAccessor(0, sizeof(MemoryBufferAvg));
+                            eyeMap = MemoryMappedFile.OpenExisting("Local\\EyeGaugeEye", MemoryMappedFileRights.ReadWrite);
+                            eyeAccessor = eyeMap.CreateViewAccessor(0, sizeof(MemoryBufferEye));
+
+                            useDilation = true;
+                            isConnected = true;
+                            Logger.LogInformation("OVREyeGauge successfully hooked.");
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogError("Memory map not connected. Waiting on connection.");
+                            Thread.Sleep(1000);
+                        }
+                    }
+                }
+                else
+                { 
+                    Logger.LogError("OVREyeGauge executable not found: " + executablePath);
+                }
+            });
+            #endregion
 
             try
             {
@@ -131,6 +198,7 @@ namespace VirtualDesktop.FaceTracking
                 _faceStateEvent = null;
             }
             _isTracking = null;
+            eyeGaugeProcess?.Kill();
         }
         #endregion
 
@@ -170,6 +238,20 @@ namespace VirtualDesktop.FaceTracking
             IsTracking = isTracking;
         }
 
+        struct MemoryBufferAvg 
+        {
+            public float leftAverage;
+            public float rightAverage;
+        }
+
+        struct MemoryBufferEye 
+        {
+            public float l_eyeX_n;
+            public float l_eyeY_n;
+            public float r_eyeX_n;
+            public float r_eyeY_n;
+        }
+
         private void UpdateEyeData(UnifiedEyeData eye, float* expressions, Quaternion orientationL, Quaternion orientationR)
         {
             #region Eye Openness parsing
@@ -189,12 +271,24 @@ namespace VirtualDesktop.FaceTracking
             eye.Left.Gaze = orientationL.Cartesian();
 
             // Eye dilation code, automated process maybe?
-            eye.Left.PupilDiameter_MM = 5f;
-            eye.Right.PupilDiameter_MM = 5f;
+            if (useDilation)
+            {
+                avgAccessor.Read(0, out MemoryBufferAvg bAvg);
+
+                eye.Left.PupilDiameter_MM = bAvg.leftAverage * 10f;
+                eye.Right.PupilDiameter_MM = bAvg.rightAverage * 10f;
+
+                MemoryBufferEye bEye;
+                bEye.l_eyeX_n = eye.Left.Gaze.x;
+                bEye.l_eyeY_n = eye.Left.Gaze.y;
+                bEye.r_eyeX_n = eye.Right.Gaze.x;
+                bEye.r_eyeY_n = eye.Right.Gaze.y;
+                eyeAccessor.Write(0, ref bEye);
+            }
 
             // Force the normalization values of Dilation to fit avg. pupil values.
-            eye._minDilation = 0;
-            eye._maxDilation = 10;
+            eye._minDilation = 0f;
+            eye._maxDilation = 10f;
 
             #endregion
         }

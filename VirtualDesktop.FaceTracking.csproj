@@ -21,11 +21,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Logo256Dilation.png" />
     <None Remove="VirtualDesktop.FaceTracking.csproj.vspscc" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\Logo256.png" />
+    <EmbeddedResource Include="Resources\Logo256Dilation.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,13 +41,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="EyeGauge\average.cso">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="EyeGauge\openvr_api.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="EyeGauge\OVREyeGauge.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="module.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(ConfigurationName) == Release (powershell.exe -Command Compress-Archive -Path '$(TargetDir)\$(ProjectName).dll', '$(TargetDir)\module.json' -DestinationPath '$(TargetDir)\VirtualDesktop.VRCFaceTracking.zip' -Force)" />
+    <Exec Command="if $(ConfigurationName) == Release (powershell.exe -Command Compress-Archive -Path '$(TargetDir)\$(ProjectName).dll', '$(TargetDir)\module.json', '$(TargetDir)\EyeGauge' -DestinationPath '$(TargetDir)\VirtualDesktop.VRCFaceTracking.zip' -Force)" />
   </Target>
 
 </Project>
