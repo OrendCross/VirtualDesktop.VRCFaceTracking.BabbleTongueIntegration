@@ -4,17 +4,56 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualDesktop.FaceTracking", "VirtualDesktop.FaceTracking.csproj", "{55AFD4B2-9815-4A97-89D9-EB5BF8E037C5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{127FEE28-EFAD-4A4F-96DA-CA7CC1667C72} = {127FEE28-EFAD-4A4F-96DA-CA7CC1667C72}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRCFaceTracking.Babble", "VRCFT-Babble\VRCFaceTracking.Babble.csproj", "{127FEE28-EFAD-4A4F-96DA-CA7CC1667C72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRCFaceTracking.SDK", "VRCFT-Babble\VRCFaceTracking\VRCFaceTracking.SDK\VRCFaceTracking.SDK.csproj", "{92F01DAA-1B3E-4E35-BBF1-EFC0B233D5F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRCFaceTracking.Core", "VRCFT-Babble\VRCFaceTracking\VRCFaceTracking.Core\VRCFaceTracking.Core.csproj", "{F728F438-7E09-4FD9-9FE3-565CB6678122}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{55AFD4B2-9815-4A97-89D9-EB5BF8E037C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{55AFD4B2-9815-4A97-89D9-EB5BF8E037C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55AFD4B2-9815-4A97-89D9-EB5BF8E037C5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{55AFD4B2-9815-4A97-89D9-EB5BF8E037C5}.Debug|x64.Build.0 = Debug|Any CPU
 		{55AFD4B2-9815-4A97-89D9-EB5BF8E037C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55AFD4B2-9815-4A97-89D9-EB5BF8E037C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55AFD4B2-9815-4A97-89D9-EB5BF8E037C5}.Release|x64.ActiveCfg = Release|Any CPU
+		{55AFD4B2-9815-4A97-89D9-EB5BF8E037C5}.Release|x64.Build.0 = Release|Any CPU
+		{127FEE28-EFAD-4A4F-96DA-CA7CC1667C72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{127FEE28-EFAD-4A4F-96DA-CA7CC1667C72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{127FEE28-EFAD-4A4F-96DA-CA7CC1667C72}.Debug|x64.ActiveCfg = Debug|x64
+		{127FEE28-EFAD-4A4F-96DA-CA7CC1667C72}.Debug|x64.Build.0 = Debug|x64
+		{127FEE28-EFAD-4A4F-96DA-CA7CC1667C72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{127FEE28-EFAD-4A4F-96DA-CA7CC1667C72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{127FEE28-EFAD-4A4F-96DA-CA7CC1667C72}.Release|x64.ActiveCfg = Release|x64
+		{127FEE28-EFAD-4A4F-96DA-CA7CC1667C72}.Release|x64.Build.0 = Release|x64
+		{92F01DAA-1B3E-4E35-BBF1-EFC0B233D5F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92F01DAA-1B3E-4E35-BBF1-EFC0B233D5F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92F01DAA-1B3E-4E35-BBF1-EFC0B233D5F7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{92F01DAA-1B3E-4E35-BBF1-EFC0B233D5F7}.Debug|x64.Build.0 = Debug|Any CPU
+		{92F01DAA-1B3E-4E35-BBF1-EFC0B233D5F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92F01DAA-1B3E-4E35-BBF1-EFC0B233D5F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92F01DAA-1B3E-4E35-BBF1-EFC0B233D5F7}.Release|x64.ActiveCfg = Release|Any CPU
+		{92F01DAA-1B3E-4E35-BBF1-EFC0B233D5F7}.Release|x64.Build.0 = Release|Any CPU
+		{F728F438-7E09-4FD9-9FE3-565CB6678122}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F728F438-7E09-4FD9-9FE3-565CB6678122}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F728F438-7E09-4FD9-9FE3-565CB6678122}.Debug|x64.ActiveCfg = Debug|x64
+		{F728F438-7E09-4FD9-9FE3-565CB6678122}.Debug|x64.Build.0 = Debug|x64
+		{F728F438-7E09-4FD9-9FE3-565CB6678122}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F728F438-7E09-4FD9-9FE3-565CB6678122}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F728F438-7E09-4FD9-9FE3-565CB6678122}.Release|x64.ActiveCfg = Release|x64
+		{F728F438-7E09-4FD9-9FE3-565CB6678122}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

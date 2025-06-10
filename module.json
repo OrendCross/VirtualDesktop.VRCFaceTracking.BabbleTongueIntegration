@@ -1,11 +1,11 @@
 {
-  "ModuleId": "91A90618-B020-4064-8832-809B2CA2B3BC",
-  "AuthorName": "Virtual Desktop, Inc.",
-  "DllFileName": "VirtualDesktop.FaceTracking.dll",
-  "DownloadUrl": "https://download.vrdesktop.net/files/VirtualDesktop.VRCFaceTracking.zip",
-  "ModuleDescription": "Provides face, eye and tongue tracking for the Quest Pro when using Virtual Desktop",
-  "ModuleName": "Virtual Desktop",
-  "ModulePageUrl": "https://www.vrdesktop.net",
-  "UsageInstructions": "Make sure to install the Virtual Desktop Streamer version 1.30 or greater before activating this module",
-  "Version": "1.1"
-}
+    "ModuleId": "d1401db5-f346-48d0-8e23-1d8a2ae60038",
+    "AuthorName": "Virtual Desktop, Inc. | dfgHiatus | OrendCross",
+    "DllFileName": "VirtualDesktopBabbleTongueIntegration.dll",
+    "DownloadUrl": "https://github.com/OrendCross/VirtualDesktop.VRCFaceTracking.BabbleTongueIntegration/releases/download/v1.0/VirtualDesktop.BabbleTongueIntegration.zip",
+    "ModuleDescription": "Provides face and eye for the Quest Pro when using Virtual Desktop, and tongue tracking using Project Babble",
+    "ModuleName": "Virtual Desktop + Babble Tongue Tracking",
+    "ModulePageUrl": "https://github.com/OrendCross/VirtualDesktop.VRCFaceTracking.BabbleTongueIntegration",
+    "UsageInstructions": "Make sure to install the Virtual Desktop Streamer version 1.30 or greater before activating this module, and have Project Babble running",
+    "Version": "1.0"
+} 

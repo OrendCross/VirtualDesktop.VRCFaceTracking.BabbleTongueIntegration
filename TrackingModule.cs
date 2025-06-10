@@ -14,6 +14,9 @@ using VRCFaceTracking.Core.Params.Expressions;
 using VRCFaceTracking.Core.Types;
 using Vector2 = VRCFaceTracking.Core.Types.Vector2;
 
+using VRCFaceTracking.Babble;
+using System.Reflection;
+
 namespace VirtualDesktop.FaceTracking
 {
     public unsafe class TrackingModule : ExtTrackingModule
@@ -30,6 +33,7 @@ namespace VirtualDesktop.FaceTracking
         private bool _eyeAvailable, _expressionAvailable;
         private EventWaitHandle _faceStateEvent;
         private bool? _isTracking = null;
+        private BabbleOSC babbleOSC;
         #endregion
 
         #region Properties
@@ -78,6 +82,9 @@ namespace VirtualDesktop.FaceTracking
                 _faceState = (FaceState*)ptr;
 
                 _faceStateEvent = EventWaitHandle.OpenExisting(BodyStateEventName);
+
+                Config babbleConfig = BabbleConfig.GetBabbleConfig();
+                babbleOSC = new BabbleOSC(logger: Logger, babbleConfig.Host, babbleConfig.Port);
             }
             catch
             {
@@ -131,6 +138,7 @@ namespace VirtualDesktop.FaceTracking
                 _faceStateEvent = null;
             }
             _isTracking = null;
+            babbleOSC.Teardown();
         }
         #endregion
 
@@ -294,10 +302,11 @@ namespace VirtualDesktop.FaceTracking
             unifiedExpressions[(int)UnifiedExpressions.NoseSneerLeft].Weight = expressions[(int)Expressions.NoseWrinklerL];
             unifiedExpressions[(int)UnifiedExpressions.NoseSneerRight].Weight = expressions[(int)Expressions.NoseWrinklerR];
 
-            // Tongue Expression Set   
-            // Future placeholder
-            unifiedExpressions[(int)UnifiedExpressions.TongueOut].Weight = expressions[(int)Expressions.TongueOut];
-            unifiedExpressions[(int)UnifiedExpressions.TongueCurlUp].Weight = expressions[(int)Expressions.TongueTipAlveolar];
+            // Babble Tongue Expression Set   
+            foreach (UnifiedExpressions expression in BabbleExpressions.BabbleExpressionMap)
+            {
+                UnifiedTracking.Data.Shapes[(int)expression].Weight = BabbleExpressions.BabbleExpressionMap.GetByKey1(expression);
+            }
         }
         #endregion
     }

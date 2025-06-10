@@ -20,6 +20,12 @@
     <Version>1.1</Version>
   </PropertyGroup>
 
+	<ItemGroup>
+    <Compile Remove="VRCFT-Babble\**" />
+    <EmbeddedResource Remove="VRCFT-Babble\**" />
+    <None Remove="VRCFT-Babble\**" />
+  </ItemGroup>
+
   <ItemGroup>
     <None Remove="VirtualDesktop.FaceTracking.csproj.vspscc" />
   </ItemGroup>
@@ -29,13 +35,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+    <PackageReference Include="ILRepack" Version="2.0.44">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+<!--	<PackageReference Include="ILRepack.MSBuild.Task" Version="2.0.13" /> -->
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="VRCFaceTracking.Core">
-      <HintPath>..\..\..\3rdParty\VRCFaceTracking\VRCFaceTracking.Core.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="VRCFT-Babble\VRCFaceTracking.Babble.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,9 +52,32 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(ConfigurationName) == Release (powershell.exe -Command Compress-Archive -Path '$(TargetDir)\$(ProjectName).dll', '$(TargetDir)\module.json' -DestinationPath '$(TargetDir)\VirtualDesktop.VRCFaceTracking.zip' -Force)" />
+	
+  <Target Name="ILRepack" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+<!--
+    Attempting to use ILRepack.MSBuild.Task results in VRCFT being unable to read the DLL.
+	Installing ILRepack as a dotnet tool and running it via powershell works fine tho
+	
+    <ItemGroup>
+      <InputAssemblies Include="$(OutputPath)VirtualDesktop.FaceTracking.dll" />
+      <InputAssemblies Include="$(OutputPath)VRCFaceTracking.Babble.dll" />
+    </ItemGroup>
+	<ItemGroup>
+	  <DoNotInternalizeAssemblies Include="VRCFaceTracking.Core.dll" />
+	  <DoNotInternalizeAssemblies Include="VRCFaceTracking.SDK.dll" />
+	</ItemGroup>
+    <ILRepack
+	  Internalize="true" 
+	  RenameInternalized="true"
+	  InputAssemblies="@(InputAssemblies)"
+	  PrimaryAssemblyFile="VirtualDesktop.FaceTracking.dll"
+	  TargetKind="Dll"
+	  OutputFile="$(OutputPath)VirtualDesktopBabbleTongueIntegration.dll" />
+-->
+	<Exec Command="powershell.exe -Command ILRepack /out:$(TargetDir)VirtualDesktopBabbleTongueIntegration.dll $(OutputPath)VirtualDesktop.FaceTracking.dll $(OutputPath)VRCFaceTracking.Babble.dll" />
   </Target>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" DependsOnTargets="ILRepack">
+	<Exec Command="if $(ConfigurationName) == Release (powershell.exe -Command Compress-Archive -Path '$(TargetDir)VirtualDesktopBabbleTongueIntegration.dll', '$(ProjectDir)module.json', '$(ProjectDir)VRCFT-Babble\BabbleConfig.json' -DestinationPath '$(TargetDir)VirtualDesktop.BabbleTongueIntegration.zip' -Force)" />
+  </Target>
 </Project>

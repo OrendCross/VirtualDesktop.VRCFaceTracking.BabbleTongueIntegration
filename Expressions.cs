@@ -64,13 +64,6 @@
         UpperLidRaiserL = 59,
         UpperLidRaiserR = 60,
         UpperLipRaiserL = 61,
-        UpperLipRaiserR = 62,
-        TongueTipInterdental = 63,
-        TongueTipAlveolar = 64,
-        TongueFrontDorsalPalate = 65,
-        TongueMidDorsalPalate = 66,
-        TongueBackDorsalVelar = 67,
-        TongueOut = 68,
-        TongueRetreat = 69
+        UpperLipRaiserR = 62
     }
 }
