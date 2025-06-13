@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <None Remove="Resources\Logo256Dilation.png" />
-	<ItemGroup>
     <Compile Remove="VRCFT-Babble\**" />
     <EmbeddedResource Remove="VRCFT-Babble\**" />
     <None Remove="VRCFT-Babble\**" />
@@ -65,10 +64,7 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(ConfigurationName) == Release (powershell.exe -Command Compress-Archive -Path '$(TargetDir)\$(ProjectName).dll', '$(TargetDir)\module.json', '$(TargetDir)\EyeGauge' -DestinationPath '$(TargetDir)\VirtualDesktop.VRCFaceTracking.zip' -Force)" />
-	
-  <Target Name="ILRepack" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+<Target Name="ILRepack" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
 <!--
     Attempting to use ILRepack.MSBuild.Task results in VRCFT being unable to read the DLL.
 	Installing ILRepack as a dotnet tool and running it via powershell works fine tho
@@ -91,8 +87,8 @@
 -->
 	<Exec Command="powershell.exe -Command ILRepack /out:$(TargetDir)VirtualDesktopBabbleTongueIntegration.dll $(OutputPath)VirtualDesktop.FaceTracking.dll $(OutputPath)VRCFaceTracking.Babble.dll" />
   </Target>
-
+   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" DependsOnTargets="ILRepack">
-	<Exec Command="if $(ConfigurationName) == Release (powershell.exe -Command Compress-Archive -Path '$(TargetDir)VirtualDesktopBabbleTongueIntegration.dll', '$(ProjectDir)module.json', '$(ProjectDir)VRCFT-Babble\BabbleConfig.json' -DestinationPath '$(TargetDir)VirtualDesktop.BabbleTongueIntegration.zip' -Force)" />
+	<Exec Command="if $(ConfigurationName) == Release (powershell.exe -Command Compress-Archive -Path '$(TargetDir)VirtualDesktopBabbleTongueIntegration.dll', '$(ProjectDir)module.json', '$(ProjectDir)VRCFT-Babble\BabbleConfig.json', '$(TargetDir)\EyeGauge' -DestinationPath '$(TargetDir)VirtualDesktop.BabbleTongueIntegration.zip' -Force)" />
   </Target>
 </Project>
