@@ -20,6 +20,8 @@
     <Version>1.1</Version>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Resources\Logo256Dilation.png" />
 	<ItemGroup>
     <Compile Remove="VRCFT-Babble\**" />
     <EmbeddedResource Remove="VRCFT-Babble\**" />
@@ -32,6 +34,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\Logo256.png" />
+    <EmbeddedResource Include="Resources\Logo256Dilation.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,10 +51,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="EyeGauge\average.cso">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="EyeGauge\openvr_api.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="EyeGauge\OVREyeGauge.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="module.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if $(ConfigurationName) == Release (powershell.exe -Command Compress-Archive -Path '$(TargetDir)\$(ProjectName).dll', '$(TargetDir)\module.json', '$(TargetDir)\EyeGauge' -DestinationPath '$(TargetDir)\VirtualDesktop.VRCFaceTracking.zip' -Force)" />
 	
   <Target Name="ILRepack" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
 <!--
